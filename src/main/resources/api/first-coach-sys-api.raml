@@ -1,0 +1,65 @@
+#%RAML 1.0
+baseUri: https://anypoint.mulesoft.com/mocking/api/v1/links/ff6fb98e-4b61-43a9-b941-bacb5fe2565b/ # 
+title: FirstCoachSysapi
+version: 1.0.0
+#baseUri: https://{host}:{port}
+protocols: HTTPS
+mediaType: application/json
+description: FirstCoach Routes and Schedule System API to fetch Routes and Schedules Detail
+
+types:
+  routes: !include dataType/routes-dataType.raml
+  schedule: !include dataType/schedule-dataType.raml
+
+securedBy:
+  - lib.basicAuth  
+  
+uses:
+  lib: exchange_modules/48d79b74-3f50-4882-bc79-83f4d312d3ce/mule-spec-lib/1.0.0/mule-spec-lib.raml
+   
+/{transportType}/{transportCompany}:
+  uriParameters:
+    transportType:
+      description: unique transportType
+      type: string
+      example:
+      required: true
+    transportCompany:
+      description: unique transportCompany
+      type: string
+      required: true  
+  /routes:    
+    get:
+      is: [lib.trackable,lib.errorCode ]
+      description: To retrieve route list from FirstCoach.
+      responses:
+        200:
+          body:
+            application/json:
+              type: routes[]
+              example: !include examples/getRoutesexample.raml
+
+  /schedules: 
+    get:
+      is: [ lib.trackable,lib.errorCode ]
+      description: To Retrieve departure schedule list from the FirstCoach Transport Provide based on the routes selected
+      queryParameters:
+        departureLocationCode:
+          type: string
+          required: true
+        destinationLocationCode:
+          type: string
+          required: true 
+      responses:
+        200:
+          body:
+            application/json:
+              type: schedule
+              example: !include examples/getSchedulesExamples.raml
+                 
+
+    
+
+    
+
+  

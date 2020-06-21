@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:min-log="http://www.mulesoft.org/schema/mule/min-log" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/min-log http://www.mulesoft.org/schema/mule/min-log/current/mule-min-log.xsd">
+	<flow name="schedules-implementationFlow" doc:id="53546b2d-e2ef-458f-92f5-d34e133efcbd" >
+		<min-log:info doc:name="Info" doc:id="a0efba11-3bf1-4ea3-9429-a4e7ce94743a" msg="Before Calling the FirstCoach Syatem" transactionProperties="#[vars.loggingProperties]"/>
+		<http:request method="POST" doc:name="firstCoachSchedulesReq" doc:id="8788b349-9089-43af-a902-df7fc6f7db05" config-ref="HTTP_Request_configuration" path="/a115ccd8-6abc-415e-bf43-da12f98b610b/fetchSchedules">
+			<http:body ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+	"originLocation":{
+		"locationCode": attributes.queryParams.'departureLocationCode'
+	},
+	"destinationLocation":{
+		"locationCode": attributes.queryParam.'destinationLocationCode'
+	}
+	
+}]]]></http:body>
+		</http:request>
+		<min-log:info doc:name="Info" doc:id="998869c0-407e-4aac-81c9-fccd02b4ddbc" msg="After Calling the FirstCoach system with Schedules retrived" transactionProperties="#[vars.loggingProperties]"/>
+		<ee:transform doc:name="Transform Message" doc:id="ef7ec387-c27c-45f1-a75b-556572613df0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	departureSchedules: payload.schedules map ( schedule , indexOfSchedule ) -> {
+		availableSeats: schedule.availableSeats,
+		departureDateTime: schedule.departureDateTime,
+		travelRoute: {
+			destinationLocation: schedule.fromLocation,
+			originLocation: schedule.toLocation
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:spring="http://www.mulesoft.org/schema/mule/spring" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:min-log="http://www.mulesoft.org/schema/mule/min-log" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/min-log http://www.mulesoft.org/schema/mule/min-log/current/mule-min-log.xsd
+http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<http:listener-config name="first-coach-sys-api-httpListenerConfig">
+        <http:listener-connection host="${secure::http.connection.host}" port="${secure::http.connection.port}" protocol="HTTPS">
+			<tls:context >
+				<tls:key-store type="jks" path="serverkeystore.jks" keyPassword="password" password="password" alias="myserver"/>
+			</tls:context>
+		</http:listener-connection>
+    </http:listener-config>
+    <apikit:config name="first-coach-sys-api-config" api="first-coach-sys-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="6c91d849-94fe-4b90-96cc-bd7ab43cff79" basePath="${secure::request.connection.basepath}" >
+		<http:request-connection host="${secure::request.connection.host}" port="${secure::request.connection.port}" protocol="HTTPS"/>
+	</http:request-config>
+	<spring:config name="Spring_Config" doc:name="Spring Config" doc:id="c7359e68-1363-4b4e-8047-a3ef3e9b3423" files="beans.xml" />
+	<spring:security-manager doc:name="Spring Security manager" doc:id="361ae376-7435-4807-b493-941ba46f7915" >
+		<spring:delegate-security-provider name="memory-provider" delegate-ref="authenticationManager" />
+	</spring:security-manager>
+	<configuration doc:name="Configuration" doc:id="45f458e6-5cf1-4ec2-8174-e54167f1c85c" defaultErrorHandler-ref="globalError_Handler"/>
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="ac4996ca-f305-4e10-b58d-eb63abe7651b" file="dev.yaml" key="victory" >
+		<secure-properties:encrypt algorithm="Blowfish" mode="ECB" />
+	</secure-properties:config>
+	<sub-flow name="audit-log-subflow" doc:id="161b9fe7-59ff-4958-9f94-7c3dab60b0e2" >
+		<min-log:new doc:name="initiate transaction properties" doc:id="f6bcb053-8e01-497b-a1fe-b100b00e5f34" headers="#[attributes.headers]" target="loggingProperties"/>
+		<min-log:put doc:name="logMessageType" doc:id="072229f0-17f2-49be-85d1-8ce83df09add" key="logMessageType" value="INTERMEDIATE" transactionProperties="#[vars.loggingProperties]" target="loggingProperties"/>
+		<min-log:put doc:name="set application name" doc:id="d44f84bc-d4f7-4a0e-bf8f-4956e69dfdda" key="applicationName" value="#[app.name]" transactionProperties="#[vars.loggingProperties]" target="loggingProperties"/>
+		<min-log:put doc:name="insert resource" doc:id="9f3e7b8e-dc6f-4bf6-bf64-c9b71546efc4" key="inboundUri" value="#[attributes.relativePath]" transactionProperties="#[vars.loggingProperties]" target="loggingProperties"/>
+		<min-log:put doc:name="Insert Method" doc:id="0a437b79-65bb-4421-ab20-68d7ec090c31" key="httpMethod" value="#[attributes.method]" transactionProperties="#[vars.loggingProperties]" target="loggingProperties"/>
+		<min-log:put doc:name="insert scheme" doc:id="a379abd0-919a-47a0-a0ca-4d3c16117815" key="scheme" value="#[attributes.scheme]" transactionProperties="#[vars.loggingProperties]" target="loggingProperties"/>
+	</sub-flow>
+</mule>

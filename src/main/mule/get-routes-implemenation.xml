@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:min-log="http://www.mulesoft.org/schema/mule/min-log" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/min-log http://www.mulesoft.org/schema/mule/min-log/current/mule-min-log.xsd">
+	
+	<flow name="routes-implemenationFlow" doc:id="479217f9-bbe0-488f-9763-0931cf6de91c" >
+		<min-log:info doc:name="Info" doc:id="115e9374-6a6d-43f8-83a8-fcbf09ebb8d5" msg="Before Calling the FirstCoach System" transactionProperties="#[vars.loggingProperties]"/>
+		<http:request method="GET" doc:name="firstCoachRouteReq" doc:id="8aebef8a-f887-42fc-83c8-a6c685c9d21d" config-ref="HTTP_Request_configuration" path="/ac6fac3a-6dc5-45f3-863a-70d943bc6892/fetchRoutes"/>
+		<min-log:info doc:id="e577724b-f664-45c3-afc5-12807696dd15" msg="After calling the FirstCoach System" transactionProperties="#[vars.loggingProperties]"/>
+		<ee:transform doc:name="Transform Message" doc:id="6e99db22-7f92-4146-bc2e-1aaacdca87bd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	originLocation: {
+		locationCode: payload01.departureLocationCode
+	},
+	destinationLocation: {
+		locationCode: payload01.arrivalLocationCode
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<min-log:info doc:name="Info" doc:id="f74c8449-b898-4e37-91c9-cd3944f331ee" transactionProperties="#[vars.loggingProperties]" msg="out put the value after mapping"/>
+	</flow>
+</mule>

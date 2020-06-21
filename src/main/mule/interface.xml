@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:spring="http://www.mulesoft.org/schema/mule/spring" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd">
+    
+    <flow name="first-coach-sys-api-main">
+        <http:listener config-ref="first-coach-sys-api-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <http:basic-security-filter doc:name="Basic security filter" doc:id="f762e91d-ec32-4a7f-8333-1cd62f81a4ee" realm="mule"/>
+		<spring:authorization-filter doc:name="Authorization filter" doc:id="4f7fbd04-9185-4b42-ad83-0d77a76194ca" requiredAuthorities="ROLE_ADMIN"/>
+		<flow-ref doc:name="audit-log-subflow" doc:id="8bc55843-c6f7-4257-83cd-6fcfd4adca7e" name="audit-log-subflow"/>
+		<apikit:router config-ref="first-coach-sys-api-config" />
+        
+    </flow>
+    <flow name="first-coach-sys-api-console">
+        <http:listener config-ref="first-coach-sys-api-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="first-coach-sys-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="get:\(transportType)\(transportCompany)\routes:first-coach-sys-api-config">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core">
+            <ee:variables>
+                <ee:set-variable variableName="transportType">attributes.uriParams.'transportType'</ee:set-variable>
+                <ee:set-variable variableName="transportCompany">attributes.uriParams.'transportCompany'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<flow-ref doc:name="routes-implemenationFlow" doc:id="2642dc81-57f6-45f1-9cc0-520e798f258c" name="routes-implemenationFlow"/>
+    </flow>
+    <flow name="get:\(transportType)\(transportCompany)\schedules:first-coach-sys-api-config">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core">
+            <ee:variables>
+                <ee:set-variable variableName="transportType">attributes.uriParams.'transportType'</ee:set-variable>
+                <ee:set-variable variableName="transportCompany">attributes.uriParams.'transportCompany'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<flow-ref doc:name="schedules-implementationFlow" doc:id="451d795e-4887-4de5-ba58-c209ca677840" name="schedules-implementationFlow"/>
+    </flow>
+</mule>

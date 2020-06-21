@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="first-coach-route-res" format="json">
+      <types:shape format="weave" example="examples/first-coach-route-resp.json"><![CDATA[%dw 2.0
+
+type first_coach_route_res = Array<{|  departureLocationCode: String,   arrivalLocationCode: String|}> {"example": "[{\\\"departureLocationCode\\\":\\\"BEN-SG\\\",\\\"arrivalLocationCode\\\":\\\"KLG-MY\\\"},{\\\"departureLocationCode\\\":\\\"BEN-SG\\\",\\\"arrivalLocationCode\\\":\\\"BU-MY\\\"},{\\\"departureLocationCode\\\":\\\"BEN-SG\\\",\\\"arrivalLocationCode\\\":\\\"TAR-MY\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="get-route-response" format="json">
+      <types:shape format="weave" example="examples/get-route-response.json"><![CDATA[%dw 2.0
+
+type get_route_response = Array<{|  originLocation: {| locationCode: String |},   destinationLocation: {| locationCode: String |}|}> {"example": "[{\\\"originLocation\\\":{\\\"locationCode\\\":\\\"BEN-SG\\\"},\\\"destinationLocation\\\":{\\\"locationCode\\\":\\\"KLG-MY\\\"}}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="first-coach-sch-res" format="json">
+      <types:shape format="weave" example="examples/first-coach-sch-res.json"><![CDATA[%dw 2.0
+
+type first_coach_sch_res = {|
+  schedules: Array<{|    departureDateTime: String,     fromLocation: String,     toLocation: String,     availableSeats: Number {"typeId": "int"}  |}>
+|} {"example": "{\\\"schedules\\\":[{\\\"departureDateTime\\\":\\\"2019-04-30T16:41:41.090Z\\\",\\\"fromLocation\\\":\\\"BEN-SG\\\",\\\"toLocation\\\":\\\"KLG-MY\\\",\\\"availableSeats\\\":50},{\\\"departureDateTime\\\":\\\"2019-04-30T18:41:41.090Z\\\",\\\"fromLocation\\\":\\\"BEN-SG\\\",\\\"toLocation\\\":\\\"KLG-MY\\\",\\\"availableSeats\\\":10}]}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="get-schedule-response" format="json">
+      <types:shape format="weave" example="examples/get-schedule-response.json"><![CDATA[%dw 2.0
+
+type get_schedule_response = {|
+  departureSchedules: Array<{|    availableSeats: Number {"typeId": "int"},     departureDateTime: String,     travelRoute: {|      destinationLocation: {| locationCode: String |},       originLocation: {| locationCode: String |}    |}  |}>
+|} {"example": "{\\\"departureSchedules\\\":[{\\\"availableSeats\\\":20,\\\"departureDateTime\\\":\\\"2019-04-30T16:41:41.090Z\\\",\\\"travelRoute\\\":{\\\"destinationLocation\\\":{\\\"locationCode\\\":\\\"KLG-MY\\\"},\\\"originLocation\\\":{\\\"locationCode\\\":\\\"BEN-SG\\\"}}},{\\\"availableSeats\\\":30,\\\"departureDateTime\\\":\\\"2019-04-30T16:41:41.090Z\\\",\\\"travelRoute\\\":{\\\"destinationLocation\\\":{\\\"locationCode\\\":\\\"KLG-MY\\\"},\\\"originLocation\\\":{\\\"locationCode\\\":\\\"BL-SG\\\"}}}]}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#6e99db22-7f92-4146-bc2e-1aaacdca87bd">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="first-coach-route-res"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="get-route-response"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#ef7ec387-c27c-45f1-a75b-556572613df0">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="first-coach-sch-res"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="get-schedule-response"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

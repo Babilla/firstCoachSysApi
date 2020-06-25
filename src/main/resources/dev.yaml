@@ -1,11 +1,28 @@
 http:
  connection:
-  host: "![E4GKMUg99Gw=]"
-  port: "![PDw4PJkMxrM=]"
+  host: "0.0.0.0"
+  port: "8082"
   
   
-request:
+requestschedule:
  connection:
-  basepath: "![9rvAaeHb/iYGZRrjg0wguN26OWlMRcMj]"
-  host: "![HTP4oN6AqgszvrjatazvcUoqRzMpb1r1]"
-  port: "![gnIoB58Cv88=]"
+  basepath: "/mocking/api/v1/links"
+  host: "anypoint.mulesoft.com"
+  port: "443"
+  path: "/230a018e-ef8a-4b2d-a3ff-d43dba581901/fetchSchedules"
+  
+requestroute:  
+ connection:
+  basepath: "/mocking/api/v1/links"
+  host: "anypoint.mulesoft.com"
+  port: "443"
+  path: "/ac6fac3a-6dc5-45f3-863a-70d943bc6892/fetchRoutes"
+
+
+
+
+
+
+  
+  
+ 

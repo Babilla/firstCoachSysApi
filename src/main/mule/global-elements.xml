@@ -13,24 +13,24 @@ http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/s
 http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
 http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
 	<http:listener-config name="first-coach-sys-api-httpListenerConfig">
-        <http:listener-connection host="${secure::http.connection.host}" port="${secure::http.connection.port}" protocol="HTTPS">
+        <http:listener-connection host="${http.connection.host}" port="${http.connection.port}" protocol="HTTPS">
 			<tls:context >
 				<tls:key-store type="jks" path="serverkeystore.jks" keyPassword="password" password="password" alias="myserver"/>
 			</tls:context>
 		</http:listener-connection>
     </http:listener-config>
     <apikit:config name="first-coach-sys-api-config" api="first-coach-sys-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
-	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="6c91d849-94fe-4b90-96cc-bd7ab43cff79" basePath="${secure::request.connection.basepath}" >
-		<http:request-connection host="${secure::request.connection.host}" port="${secure::request.connection.port}" protocol="HTTPS"/>
+	<http:request-config name="HTTP_Request_configuration_schedule" doc:name="HTTP Request configuration" doc:id="6c91d849-94fe-4b90-96cc-bd7ab43cff79" basePath="${requestschedule.connection.basepath}" >
+		<http:request-connection host="${requestschedule.connection.host}" port="${requestschedule.connection.port}" protocol="HTTPS"/>
 	</http:request-config>
 	<spring:config name="Spring_Config" doc:name="Spring Config" doc:id="c7359e68-1363-4b4e-8047-a3ef3e9b3423" files="beans.xml" />
 	<spring:security-manager doc:name="Spring Security manager" doc:id="361ae376-7435-4807-b493-941ba46f7915" >
 		<spring:delegate-security-provider name="memory-provider" delegate-ref="authenticationManager" />
 	</spring:security-manager>
-	<configuration doc:name="Configuration" doc:id="45f458e6-5cf1-4ec2-8174-e54167f1c85c" defaultErrorHandler-ref="globalError_Handler"/>
-	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="ac4996ca-f305-4e10-b58d-eb63abe7651b" file="dev.yaml" key="victory" >
-		<secure-properties:encrypt algorithm="Blowfish" mode="ECB" />
-	</secure-properties:config>
+	<http:request-config name="HTTP_Request_configuration_Route" doc:name="HTTP Request configuration" doc:id="68e5cecd-50a2-4381-80c9-292b32bd751d" basePath="${requestroute.connection.basepath}">
+		<http:request-connection host="${requestroute.connection.host}" port="${requestroute.connection.port}" protocol="HTTPS"/>
+	</http:request-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="7fda888b-92ca-4a34-bfde-7627386901ce" file="dev.yaml" />
 	<sub-flow name="audit-log-subflow" doc:id="161b9fe7-59ff-4958-9f94-7c3dab60b0e2" >
 		<min-log:new doc:name="initiate transaction properties" doc:id="f6bcb053-8e01-497b-a1fe-b100b00e5f34" headers="#[attributes.headers]" target="loggingProperties"/>
 		<min-log:put doc:name="logMessageType" doc:id="072229f0-17f2-49be-85d1-8ce83df09add" key="logMessageType" value="INTERMEDIATE" transactionProperties="#[vars.loggingProperties]" target="loggingProperties"/>

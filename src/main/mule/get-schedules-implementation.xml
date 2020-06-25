@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:min-log="http://www.mulesoft.org/schema/mule/min-log" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:min-log="http://www.mulesoft.org/schema/mule/min-log"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-http://www.mulesoft.org/schema/mule/min-log http://www.mulesoft.org/schema/mule/min-log/current/mule-min-log.xsd">
+http://www.mulesoft.org/schema/mule/min-log http://www.mulesoft.org/schema/mule/min-log/current/mule-min-log.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
 	<flow name="schedules-implementationFlow" doc:id="53546b2d-e2ef-458f-92f5-d34e133efcbd" >
 		<min-log:info doc:name="Info" doc:id="a0efba11-3bf1-4ea3-9429-a4e7ce94743a" msg="Before Calling the FirstCoach Syatem" transactionProperties="#[vars.loggingProperties]"/>
-		<http:request method="POST" doc:name="firstCoachSchedulesReq" doc:id="8788b349-9089-43af-a902-df7fc6f7db05" config-ref="HTTP_Request_configuration" path="/a115ccd8-6abc-415e-bf43-da12f98b610b/fetchSchedules">
+		<http:request method="POST" doc:name="firstCoachSchedulesReq" doc:id="8788b349-9089-43af-a902-df7fc6f7db05" config-ref="HTTP_Request_configuration_schedule" path="${requestschedule.connection.path}">
 			<http:body ><![CDATA[#[%dw 2.0
 output application/json
 ---
@@ -33,12 +34,23 @@ output application/json
 		availableSeats: schedule.availableSeats,
 		departureDateTime: schedule.departureDateTime,
 		travelRoute: {
-			destinationLocation: schedule.fromLocation,
-			originLocation: schedule.toLocation
+			destinationLocation: {
+				locationCode:schedule.fromLocation},
+			originLocation: {
+				locationCode:schedule.toLocation}
 		}
 	}
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<os:store doc:id="bf037903-6ee6-4d0f-92c9-14f87165aad0" key="successResponse"/>
+	<error-handler> 
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="6669c47f-f877-4788-93fd-aefdea6ed341" >
+				<os:retrieve doc:name="Retrieve" doc:id="fc1d9d67-01cb-454a-bfed-6e26e5e85f06" key="successResponse">
+					<os:default-value ><![CDATA[#[[]]]]></os:default-value>
+				</os:retrieve>
+			</on-error-continue>
+		</error-handler>
+		
 	</flow>
 </mule>

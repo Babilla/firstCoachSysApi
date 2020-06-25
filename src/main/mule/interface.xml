@@ -17,7 +17,7 @@ http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/s
 		<spring:authorization-filter doc:name="Authorization filter" doc:id="4f7fbd04-9185-4b42-ad83-0d77a76194ca" requiredAuthorities="ROLE_ADMIN"/>
 		<flow-ref doc:name="audit-log-subflow" doc:id="8bc55843-c6f7-4257-83cd-6fcfd4adca7e" name="audit-log-subflow"/>
 		<apikit:router config-ref="first-coach-sys-api-config" />
-        
+        <error-handler ref="globalError_Handler" /> 
     </flow>
     <flow name="first-coach-sys-api-console">
         <http:listener config-ref="first-coach-sys-api-httpListenerConfig" path="/console/*">

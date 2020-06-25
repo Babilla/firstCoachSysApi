@@ -9,7 +9,7 @@ http://www.mulesoft.org/schema/mule/min-log http://www.mulesoft.org/schema/mule/
 	
 	<flow name="routes-implemenationFlow" doc:id="479217f9-bbe0-488f-9763-0931cf6de91c" >
 		<min-log:info doc:name="Info" doc:id="115e9374-6a6d-43f8-83a8-fcbf09ebb8d5" msg="Before Calling the FirstCoach System" transactionProperties="#[vars.loggingProperties]"/>
-		<http:request method="GET" doc:name="firstCoachRouteReq" doc:id="8aebef8a-f887-42fc-83c8-a6c685c9d21d" config-ref="HTTP_Request_configuration" path="/ac6fac3a-6dc5-45f3-863a-70d943bc6892/fetchRoutes"/>
+		<http:request method="GET" doc:name="firstCoachRouteReq" doc:id="8aebef8a-f887-42fc-83c8-a6c685c9d21d" config-ref="HTTP_Request_configuration_Route" path="${requestroute.connection.path}"/>
 		<min-log:info doc:id="e577724b-f664-45c3-afc5-12807696dd15" msg="After calling the FirstCoach System" transactionProperties="#[vars.loggingProperties]"/>
 		<ee:transform doc:name="Transform Message" doc:id="6e99db22-7f92-4146-bc2e-1aaacdca87bd" >
 			<ee:message >
@@ -26,6 +26,10 @@ payload map ( payload01 , indexOfPayload01 ) -> {
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+	
+	
 		<min-log:info doc:name="Info" doc:id="f74c8449-b898-4e37-91c9-cd3944f331ee" transactionProperties="#[vars.loggingProperties]" msg="out put the value after mapping"/>
+	<error-handler ref="globalError_Handler" />
+	
 	</flow>
 </mule>

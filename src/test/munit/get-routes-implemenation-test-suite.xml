@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="get-routes-implemenation-test-suite.xml" />
+	<munit:test name="get-routes-implemenation-test-suite-routes-implemenationFlowTest" doc:id="a0b0cbb0-8eb7-4413-a598-0a8b76c329e4" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0393cefc-68f8-44ef-9585-65556f1acb14" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="firstCoachRouteReq" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/java ---  readUrl("classpath://ExOutput.json", "application/json")]' mediaType="application/java" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3fbebbfd-9ec8-478c-89ab-5a092c94e759" >
+				<munit:variables >
+					<munit:variable key="transportType" value="sea" />
+					<munit:variable key="transportCompany" value="Firstcoach" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to routes-implemenationFlow" doc:id="d049c557-ae5d-4d56-8470-2e236f8c3b2e" name="get:\(transportType)\(transportCompany)\routes:first-coach-sys-api-config"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:verify-call doc:name="Verify call" doc:id="d37410d2-841d-455f-8ef7-590e35794d97" processor="min-log:info" times="2">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Info" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	
+	<munit:test name="get-routes-negative-test-suite" doc:id="a0b0cbb0-8eb7-4413-a598-0a8b76c329e4" description="Test" expectedErrorType="HTTP:BAD_REQUEST">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0393cefc-68f8-44ef-9585-65556f1acb14" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="firstCoachRouteReq" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:BAD_REQUEST" />
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3fbebbfd-9ec8-478c-89ab-5a092c94e759" >
+				<munit:variables >
+					<munit:variable key="transportType" value="sea" />
+					<munit:variable key="transportCompany" value="Firstcoach" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to routes-implemenationFlow" doc:id="d049c557-ae5d-4d56-8470-2e236f8c3b2e" name="get:\(transportType)\(transportCompany)\routes:first-coach-sys-api-config"/>
+		</munit:execution>
+	</munit:test>
+	
+	<munit:test name="get-schedules-negative-test-suite" doc:id="904b6162-a8bb-489e-8fd7-0468d9b7498f" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a98714e8-a7aa-475f-b6df-e029ad1fb717" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="firstCoachSchedulesReq" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:TIMEOUT" />
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3abe09fd-502a-45b0-8575-cf75a389e3c4" />
+			<flow-ref doc:name="get:\(transportType)\(transportCompany)\schedules:first-coach-sys-api-config" doc:id="a43fd2ad-5790-425a-aae1-0fd4c4575958" name="get:\(transportType)\(transportCompany)\schedules:first-coach-sys-api-config"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:verify-call doc:name="Verify call" doc:id="6c26999b-34a7-4aa5-8bc6-728702fb8b62" processor="min-log:info" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Info" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+
+		</munit:validation>
+	
+</munit:test>
+
+<munit:test name="apikit-APIKIT:BAD_REQUEST-negative-test-suite" doc:id="904b6162-a8bb-489e-8fd7-0468d9b7498f" description="Test" expectedErrorType="APIKIT:BAD_REQUEST">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a98714e8-a7aa-475f-b6df-e029ad1fb717" processor="http:basic-security-filter">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Basic security filter" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:BAD_REQUEST" />
+				</munit-tools:then-return>
+			
+
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3abe09fd-502a-45b0-8575-cf75a389e3c4" />
+			<flow-ref doc:name="first-coach-sys-api-main" doc:id="a43fd2ad-5790-425a-aae1-0fd4c4575958" name="first-coach-sys-api-main"/>
+		</munit:execution>
+	
+</munit:test>
+<munit:test name="apikit-APIKIT:NOT_FOUND-negative-test-suite" doc:id="904b6162-a8bb-489e-8fd7-0468d9b7498f" description="Test" expectedErrorType="APIKIT:NOT_FOUND">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a98714e8-a7aa-475f-b6df-e029ad1fb717" processor="http:basic-security-filter">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Basic security filter" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_FOUND" />
+				</munit-tools:then-return>
+			
+
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3abe09fd-502a-45b0-8575-cf75a389e3c4" />
+			<flow-ref doc:name="first-coach-sys-api-main" doc:id="a43fd2ad-5790-425a-aae1-0fd4c4575958" name="first-coach-sys-api-main"/>
+		</munit:execution>
+	
+</munit:test>
+<munit:test name="apikit-APIKIT:METHOD_NOT_ALLOWED-negative-test-suite" doc:id="904b6162-a8bb-489e-8fd7-0468d9b7498f" description="Test" expectedErrorType="APIKIT:METHOD_NOT_ALLOWED">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a98714e8-a7aa-475f-b6df-e029ad1fb717" processor="http:basic-security-filter">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Basic security filter" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:METHOD_NOT_ALLOWED" />
+				</munit-tools:then-return>
+			
+
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3abe09fd-502a-45b0-8575-cf75a389e3c4" />
+			<flow-ref doc:name="first-coach-sys-api-main" doc:id="a43fd2ad-5790-425a-aae1-0fd4c4575958" name="first-coach-sys-api-main"/>
+		</munit:execution>
+	
+</munit:test>
+<munit:test name="apikit-APIKIT:NOT_ACCEPTABLE-negative-test-suite" doc:id="904b6162-a8bb-489e-8fd7-0468d9b7498f" description="Test" expectedErrorType="APIKIT:NOT_ACCEPTABLE">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a98714e8-a7aa-475f-b6df-e029ad1fb717" processor="http:basic-security-filter">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Basic security filter" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_ACCEPTABLE" />
+				</munit-tools:then-return>
+			
+
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3abe09fd-502a-45b0-8575-cf75a389e3c4" />
+			<flow-ref doc:name="first-coach-sys-api-main" doc:id="a43fd2ad-5790-425a-aae1-0fd4c4575958" name="first-coach-sys-api-main"/>
+		</munit:execution>
+	
+</munit:test>
+<munit:test name="apikit-APIKIT:UNSUPPORTED_MEDIA_TYPE-negative-test-suite" doc:id="904b6162-a8bb-489e-8fd7-0468d9b7498f" description="Test" expectedErrorType="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a98714e8-a7aa-475f-b6df-e029ad1fb717" processor="http:basic-security-filter">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Basic security filter" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:UNSUPPORTED_MEDIA_TYPE" />
+				</munit-tools:then-return>
+			
+
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3abe09fd-502a-45b0-8575-cf75a389e3c4" />
+			<flow-ref doc:name="first-coach-sys-api-main" doc:id="a43fd2ad-5790-425a-aae1-0fd4c4575958" name="first-coach-sys-api-main"/>
+		</munit:execution>
+		</munit:test>
+	<munit:test name="apikit-APIKIT:NOT_IMPLEMENTED-negative-test-suite" doc:id="904b6162-a8bb-489e-8fd7-0468d9b7498f" description="Test" expectedErrorType="APIKIT:NOT_IMPLEMENTED">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a98714e8-a7aa-475f-b6df-e029ad1fb717" processor="http:basic-security-filter">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Basic security filter" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_IMPLEMENTED" />
+				</munit-tools:then-return>
+		
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3abe09fd-502a-45b0-8575-cf75a389e3c4" />
+			<flow-ref doc:name="first-coach-sys-api-main" doc:id="a43fd2ad-5790-425a-aae1-0fd4c4575958" name="first-coach-sys-api-main"/>
+		</munit:execution>
+	
+</munit:test>
+<munit:test name="apikit-HTTP:CONNECTIVITY-negative-test-suite" doc:id="904b6162-a8bb-489e-8fd7-0468d9b7498f" description="Test" expectedErrorType="HTTP:CONNECTIVITY">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a98714e8-a7aa-475f-b6df-e029ad1fb717" processor="http:basic-security-filter">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Basic security filter" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:CONNECTIVITY" />
+				</munit-tools:then-return>
+			
+
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3abe09fd-502a-45b0-8575-cf75a389e3c4" />
+			<flow-ref doc:name="first-coach-sys-api-main" doc:id="a43fd2ad-5790-425a-aae1-0fd4c4575958" name="first-coach-sys-api-main"/>
+		</munit:execution>
+	
+</munit:test>
+<munit:test name="apikit-HTTP:FORBIDDEN-negative-test-suite" doc:id="904b6162-a8bb-489e-8fd7-0468d9b7498f" description="Test" expectedErrorType="HTTP:FORBIDDEN">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a98714e8-a7aa-475f-b6df-e029ad1fb717" processor="http:basic-security-filter">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Basic security filter" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:FORBIDDEN" />
+				</munit-tools:then-return>
+			
+
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3abe09fd-502a-45b0-8575-cf75a389e3c4" />
+			<flow-ref doc:name="first-coach-sys-api-main" doc:id="a43fd2ad-5790-425a-aae1-0fd4c4575958" name="first-coach-sys-api-main"/>
+		</munit:execution>
+	
+</munit:test>
+<munit:test name="apikit-HTTP:INTERNAL_SERVER_ERROR-negative-test-suite" doc:id="904b6162-a8bb-489e-8fd7-0468d9b7498f" description="Test" expectedErrorType="HTTP:INTERNAL_SERVER_ERROR">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a98714e8-a7aa-475f-b6df-e029ad1fb717" processor="http:basic-security-filter">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Basic security filter" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR" />
+				</munit-tools:then-return>
+			
+
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3abe09fd-502a-45b0-8575-cf75a389e3c4" />
+			<flow-ref doc:name="first-coach-sys-api-main" doc:id="a43fd2ad-5790-425a-aae1-0fd4c4575958" name="first-coach-sys-api-main"/>
+		</munit:execution>
+	
+</munit:test>
+<munit:test name="apikit-HTTP:METHOD_NOT_ALLOWED-negative-test-suite" doc:id="904b6162-a8bb-489e-8fd7-0468d9b7498f" description="Test" expectedErrorType="HTTP:METHOD_NOT_ALLOWED">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a98714e8-a7aa-475f-b6df-e029ad1fb717" processor="http:basic-security-filter">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Basic security filter" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:METHOD_NOT_ALLOWED" />
+				</munit-tools:then-return>
+			
+
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3abe09fd-502a-45b0-8575-cf75a389e3c4" />
+			<flow-ref doc:name="first-coach-sys-api-main" doc:id="a43fd2ad-5790-425a-aae1-0fd4c4575958" name="first-coach-sys-api-main"/>
+		</munit:execution>
+	
+</munit:test>
+<munit:test name="apikit-HTTP:NOT_ACCEPTABLE-negative-test-suite" doc:id="904b6162-a8bb-489e-8fd7-0468d9b7498f" description="Test" expectedErrorType="HTTP:NOT_ACCEPTABLE">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a98714e8-a7aa-475f-b6df-e029ad1fb717" processor="http:basic-security-filter">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Basic security filter" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:NOT_ACCEPTABLE" />
+				</munit-tools:then-return>
+			
+
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3abe09fd-502a-45b0-8575-cf75a389e3c4" />
+			<flow-ref doc:name="first-coach-sys-api-main" doc:id="a43fd2ad-5790-425a-aae1-0fd4c4575958" name="first-coach-sys-api-main"/>
+		</munit:execution>
+	
+</munit:test>
+<munit:test name="apikit-HTTP:NOT_FOUND-negative-test-suite" doc:id="904b6162-a8bb-489e-8fd7-0468d9b7498f" description="Test" expectedErrorType="HTTP:NOT_FOUND">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a98714e8-a7aa-475f-b6df-e029ad1fb717" processor="http:basic-security-filter">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Basic security filter" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:NOT_FOUND" />
+				</munit-tools:then-return>
+			
+
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3abe09fd-502a-45b0-8575-cf75a389e3c4" />
+			<flow-ref doc:name="first-coach-sys-api-main" doc:id="a43fd2ad-5790-425a-aae1-0fd4c4575958" name="first-coach-sys-api-main"/>
+		</munit:execution>
+	
+</munit:test>
+<munit:test name="apikit-HTTP:PARSING-negative-test-suite" doc:id="904b6162-a8bb-489e-8fd7-0468d9b7498f" description="Test" expectedErrorType="HTTP:PARSING">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a98714e8-a7aa-475f-b6df-e029ad1fb717" processor="http:basic-security-filter">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Basic security filter" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:PARSING" />
+				</munit-tools:then-return>
+			
+
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3abe09fd-502a-45b0-8575-cf75a389e3c4" />
+			<flow-ref doc:name="first-coach-sys-api-main" doc:id="a43fd2ad-5790-425a-aae1-0fd4c4575958" name="first-coach-sys-api-main"/>
+		</munit:execution>
+</munit:test>
+	<munit:test name="apikit-HTTP:RETRY_EXHAUSTED-negative-test-suite" doc:id="904b6162-a8bb-489e-8fd7-0468d9b7498f" description="Test" expectedErrorType="HTTP:RETRY_EXHAUSTED">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a98714e8-a7aa-475f-b6df-e029ad1fb717" processor="http:basic-security-filter">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Basic security filter" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:RETRY_EXHAUSTED" />
+				</munit-tools:then-return>
+			
+
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3abe09fd-502a-45b0-8575-cf75a389e3c4" />
+			<flow-ref doc:name="first-coach-sys-api-main" doc:id="a43fd2ad-5790-425a-aae1-0fd4c4575958" name="first-coach-sys-api-main"/>
+		</munit:execution>
+	
+</munit:test>
+
+<munit:test name="apikit-HTTP:SECURITY-negative-test-suite" doc:id="904b6162-a8bb-489e-8fd7-0468d9b7498f" description="Test" expectedErrorType="HTTP:SECURITY">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a98714e8-a7aa-475f-b6df-e029ad1fb717" processor="http:basic-security-filter">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Basic security filter" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:SECURITY" />
+				</munit-tools:then-return>
+			
+
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3abe09fd-502a-45b0-8575-cf75a389e3c4" />
+			<flow-ref doc:name="first-coach-sys-api-main" doc:id="a43fd2ad-5790-425a-aae1-0fd4c4575958" name="first-coach-sys-api-main"/>
+		</munit:execution>
+	
+</munit:test>
+
+<munit:test name="apikit-HTTP:TIMEOUT-negative-test-suite" doc:id="904b6162-a8bb-489e-8fd7-0468d9b7498f" description="Test" expectedErrorType="HTTP:TIMEOUT">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a98714e8-a7aa-475f-b6df-e029ad1fb717" processor="http:basic-security-filter">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Basic security filter" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:TIMEOUT" />
+				</munit-tools:then-return>
+			
+
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3abe09fd-502a-45b0-8575-cf75a389e3c4" />
+			<flow-ref doc:name="first-coach-sys-api-main" doc:id="a43fd2ad-5790-425a-aae1-0fd4c4575958" name="first-coach-sys-api-main"/>
+		</munit:execution>
+	
+</munit:test>
+	<munit:test name="get-schedules-positive-test-suite" doc:id="904b6162-a8bb-489e-8fd7-0468d9b7498f" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a98714e8-a7aa-475f-b6df-e029ad1fb717" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="firstCoachSchedulesReq" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value='#[output application/java ---  readUrl("classpath://exOutputSchedules.json", "application/json")]' mediaType="application/java" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<munit:set-event doc:name="Set Event" doc:id="3abe09fd-502a-45b0-8575-cf75a389e3c4" />
+			<flow-ref doc:name="get:\(transportType)\(transportCompany)\schedules:first-coach-sys-api-config" doc:id="a43fd2ad-5790-425a-aae1-0fd4c4575958" name="get:\(transportType)\(transportCompany)\schedules:first-coach-sys-api-config" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:verify-call doc:name="Verify call" doc:id="03acf269-1140-45b3-a53a-f73dd1f3cf75" processor="min-log:info" times="2">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="Info" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+
+		</munit:validation>
+	
+</munit:test>
+
+
+
+</mule>
